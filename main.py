@@ -20,7 +20,8 @@ from pygame import (
 from moderngl import BLEND, CULL_FACE, DEPTH_TEST, create_context
 from sys import exit
 
-from settings import BACKGROUND_COLOR, WINDOW_RESOLUTION
+from settings import SKYBOX_COLOR, WINDOW_RESOLUTION
+from srcs.scene import Scene
 from srcs.shader import Shader
 
 
@@ -67,7 +68,7 @@ class Engine:
         self.on_init()
 
     def show_loading_screen(self) -> None:
-        self.context.clear(color=BACKGROUND_COLOR)
+        self.context.clear(color=SKYBOX_COLOR)
         display.flip()
 
     def on_init(self) -> None:
@@ -76,16 +77,19 @@ class Engine:
         # TODO: Initialize game objects and resources here
         # For example, load shaders, textures, etc.
         self.shader = Shader(self)
+        self.scene = Scene(self)
 
     def update(self) -> None:
         self.shader.update()
+        self.scene.update()
 
         self.delta_time = self.clock.tick()
         self.time = time.get_ticks() * 0.001
         display.set_caption(f"ft_vox - {self.clock.get_fps():.0f}fps")
 
     def render(self) -> None:
-        self.context.clear(color=BACKGROUND_COLOR)
+        self.context.clear(color=SKYBOX_COLOR)
+        self.scene.render()
         display.flip()
 
     def handle_events(self) -> None:
