@@ -1,9 +1,10 @@
+import random
 from typing import TYPE_CHECKING
 from glm import ivec3, mat4, simplex, vec2, vec3, translate
 from numpy import array, ndarray, zeros
 
 from meshes.chunk_mesh import ChunkMesh
-from settings import CHUNK_AREA, CHUNK_SIZE, CHUNK_VOLUME
+from settings import CHUNK_AREA, CHUNK_SIZE, CHUNK_VOLUME, SHOW_CHUNKS
 
 
 if TYPE_CHECKING:
@@ -39,6 +40,7 @@ class Chunk:
         voxels = zeros(CHUNK_VOLUME, dtype="uint8")
 
         cx, cy, cz = ivec3(self.position) * CHUNK_SIZE
+        chunk_color = random.randrange(1, 100)
 
         for x in range(CHUNK_SIZE):
             for z in range(CHUNK_SIZE):
@@ -49,7 +51,9 @@ class Chunk:
 
                 for y in range(local_height):
                     wy = y + cy
-                    voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = wy + 1
+                    voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
+                        chunk_color if SHOW_CHUNKS else wy + 1
+                    )
 
         if any(voxels):
             self.is_empty = False

@@ -6,6 +6,7 @@ from math import sqrt
 WINDOW_TITLE = "ft_vox"
 WINDOW_RESOLUTION = vec2(1920, 1080)
 KEYBOARD_QWERTY = False  # Set to False for AZERTY keyboard layout
+SHOW_CHUNKS = False
 
 
 # CAMERA SETTINGS
