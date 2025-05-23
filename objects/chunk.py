@@ -18,6 +18,7 @@ class Chunk:
         self.matrix_model = self.get_model_matrix()
         self.voxels: ndarray = None
         self.mesh: ChunkMesh = None
+        self.is_empty = True
 
     def get_model_matrix(self) -> ndarray:
         return translate(mat4(), vec3(self.position) * CHUNK_SIZE)
@@ -29,6 +30,8 @@ class Chunk:
         self.mesh = ChunkMesh(self)
 
     def render(self) -> None:
+        if self.is_empty:
+            return
         self.set_uniform()
         self.mesh.render()
 
@@ -47,4 +50,8 @@ class Chunk:
                 for y in range(local_height):
                     wy = y + cy
                     voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = wy + 1
+
+        if any(voxels):
+            self.is_empty = False
+
         return voxels
