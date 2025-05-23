@@ -12,6 +12,7 @@ from glm import (
 )
 
 from settings import ASPECT_RATIO, FAR, NEAR, PITCH_LIMIT, VERTICAL_FOV
+from srcs.frustum import Frustum
 
 
 class Camera:
@@ -26,6 +27,8 @@ class Camera:
 
         self.matrix_projection = perspective(VERTICAL_FOV, ASPECT_RATIO, NEAR, FAR)
         self.matrix_view = mat4()
+
+        self.frustum = Frustum(self)
 
     def update(self) -> None:
         self.update_vectors()
