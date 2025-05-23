@@ -24,6 +24,7 @@ from settings import SKYBOX_COLOR, WINDOW_RESOLUTION
 from srcs.player import Player
 from srcs.scene import Scene
 from srcs.shader import Shader
+from srcs.textures import Textures
 
 
 class Engine:
@@ -75,8 +76,7 @@ class Engine:
     def on_init(self) -> None:
         self.show_loading_screen()
 
-        # TODO: Initialize game objects and resources here
-        # For example, load shaders, textures, etc.
+        self.textures = Textures(self)
         self.player = Player(self)
         self.shader = Shader(self)
         self.scene = Scene(self)
