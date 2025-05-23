@@ -12,8 +12,8 @@ class Textures:
         self.game = game
         self.context = game.context
 
-        self.texture0 = self.load("test.png")
-        self.texture0.use(location=0)
+        self.notexture = self.load("frame.png")
+        self.notexture.use(location=0)
 
     def load(self, file_name: str) -> Texture:
         texture = image.load(f"assets/{file_name}")
