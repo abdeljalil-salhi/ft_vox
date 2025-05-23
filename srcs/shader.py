@@ -11,20 +11,20 @@ class Shader:
         self.game = game
         self.context = game.context
         self.player = game.player
-        self.quad = self.get_program("quad")
+        self.chunk = self.get_program("chunk")
 
         self.set_uniforms_on_init()
 
     def set_uniforms_on_init(self) -> None:
-        self.quad["matrix_projection"].write(self.player.matrix_projection)
-        self.quad["matrix_model"].write(mat4())
+        self.chunk["matrix_projection"].write(self.player.matrix_projection)
+        self.chunk["matrix_model"].write(mat4())
 
     def update(self) -> None:
         """
         Update the shader program if needed.
         This method can be used to update uniforms or other properties of the shader.
         """
-        self.quad["matrix_view"].write(self.player.matrix_view)
+        self.chunk["matrix_view"].write(self.player.matrix_view)
 
     def get_program(self, shader_name: str) -> Program:
         """
