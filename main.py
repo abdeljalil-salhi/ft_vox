@@ -21,6 +21,7 @@ from moderngl import BLEND, CULL_FACE, DEPTH_TEST, create_context
 from sys import exit
 
 from settings import SKYBOX_COLOR, WINDOW_RESOLUTION
+from srcs.player import Player
 from srcs.scene import Scene
 from srcs.shader import Shader
 
@@ -76,10 +77,12 @@ class Engine:
 
         # TODO: Initialize game objects and resources here
         # For example, load shaders, textures, etc.
+        self.player = Player(self)
         self.shader = Shader(self)
         self.scene = Scene(self)
 
     def update(self) -> None:
+        self.player.update()
         self.shader.update()
         self.scene.update()
 
