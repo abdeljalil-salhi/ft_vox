@@ -1,18 +1,42 @@
 from glm import vec3
 from numpy import empty, ndarray
 
-from settings import CHUNK_AREA, CHUNK_SIZE, CHUNK_VOLUME
+from settings import (
+    CHUNK_AREA,
+    CHUNK_SIZE,
+    CHUNK_VOLUME,
+    WORLD_AREA,
+    WORLD_DEPTH,
+    WORLD_HEIGHT,
+    WORLD_WIDTH,
+)
 
 
-def is_void(voxel_position: vec3, chunk_voxels: ndarray) -> bool:
-    """
-    Check if the voxel at the given position is void (empty).
-    """
-    x, y, z = voxel_position
-    if 0 <= x < CHUNK_SIZE and 0 <= y < CHUNK_SIZE and 0 <= z < CHUNK_SIZE:
-        if chunk_voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y]:
-            return False
-    return True
+def get_chunk_index(world_voxel_position: vec3) -> int:
+    wx, wy, wz = world_voxel_position
+    cx = wx // CHUNK_SIZE
+    cy = wy // CHUNK_SIZE
+    cz = wz // CHUNK_SIZE
+
+    if not (0 <= cx < WORLD_WIDTH and 0 <= cy < WORLD_HEIGHT and 0 <= cz < WORLD_DEPTH):
+        return -1
+
+    return cx + WORLD_WIDTH * cz + WORLD_AREA * cy
+
+
+def is_void(
+    local_voxel_position: vec3, world_voxel_position: vec3, world_voxels: ndarray
+) -> bool:
+    chunk_index = get_chunk_index(world_voxel_position)
+    if chunk_index == -1:
+        return False
+
+    chunk_voxels = world_voxels[chunk_index]
+    x, y, z = local_voxel_position
+
+    return not chunk_voxels[
+        x % CHUNK_SIZE + z % CHUNK_SIZE * CHUNK_SIZE + y % CHUNK_SIZE * CHUNK_AREA
+    ]
 
 
 def add_data(vertex_data: ndarray, index: int, *vertices: tuple) -> int:
@@ -23,7 +47,12 @@ def add_data(vertex_data: ndarray, index: int, *vertices: tuple) -> int:
     return index
 
 
-def build_chunk_mesh(chunk_voxels: ndarray, format_size: int) -> ndarray:
+def build_chunk_mesh(
+    chunk_voxels: ndarray,
+    format_size: int,
+    chunk_position: tuple,
+    world_voxels: ndarray,
+) -> ndarray:
     """
     NOTES:
     - Each vertex is represented by 5 bytes:
@@ -41,8 +70,13 @@ def build_chunk_mesh(chunk_voxels: ndarray, format_size: int) -> ndarray:
                 if not voxel_id:
                     continue  # Skip empty voxels
 
+                cx, cy, cz = chunk_position
+                wx = x + cx * CHUNK_SIZE
+                wy = y + cy * CHUNK_SIZE
+                wz = z + cz * CHUNK_SIZE
+
                 # Top face
-                if is_void((x, y + 1, z), chunk_voxels):
+                if is_void((x, y + 1, z), (wx, wy + 1, wz), world_voxels):
                     v0 = (x, y + 1, z, voxel_id, 0)
                     v1 = (x + 1, y + 1, z, voxel_id, 0)
                     v2 = (x + 1, y + 1, z + 1, voxel_id, 0)
@@ -51,7 +85,7 @@ def build_chunk_mesh(chunk_voxels: ndarray, format_size: int) -> ndarray:
                     index = add_data(vertex_data, index, v0, v3, v2, v0, v2, v1)
 
                 # Bottom face
-                if is_void((x, y - 1, z), chunk_voxels):
+                if is_void((x, y - 1, z), (wx, wy - 1, wz), world_voxels):
                     v0 = (x, y, z, voxel_id, 1)
                     v1 = (x + 1, y, z, voxel_id, 1)
                     v2 = (x + 1, y, z + 1, voxel_id, 1)
@@ -60,7 +94,7 @@ def build_chunk_mesh(chunk_voxels: ndarray, format_size: int) -> ndarray:
                     index = add_data(vertex_data, index, v0, v2, v3, v0, v1, v2)
 
                 # Right face
-                if is_void((x + 1, y, z), chunk_voxels):
+                if is_void((x + 1, y, z), (wx + 1, wy, wz), world_voxels):
                     v0 = (x + 1, y, z, voxel_id, 2)
                     v1 = (x + 1, y + 1, z, voxel_id, 2)
                     v2 = (x + 1, y + 1, z + 1, voxel_id, 2)
@@ -69,7 +103,7 @@ def build_chunk_mesh(chunk_voxels: ndarray, format_size: int) -> ndarray:
                     index = add_data(vertex_data, index, v0, v1, v2, v0, v2, v3)
 
                 # Left face
-                if is_void((x - 1, y, z), chunk_voxels):
+                if is_void((x - 1, y, z), (wx - 1, wy, wz), world_voxels):
                     v0 = (x, y, z, voxel_id, 3)
                     v1 = (x, y + 1, z, voxel_id, 3)
                     v2 = (x, y + 1, z + 1, voxel_id, 3)
@@ -78,7 +112,7 @@ def build_chunk_mesh(chunk_voxels: ndarray, format_size: int) -> ndarray:
                     index = add_data(vertex_data, index, v0, v2, v1, v0, v3, v2)
 
                 # Back face
-                if is_void((x, y, z - 1), chunk_voxels):
+                if is_void((x, y, z - 1), (wx, wy, wz - 1), world_voxels):
                     v0 = (x, y, z, voxel_id, 4)
                     v1 = (x, y + 1, z, voxel_id, 4)
                     v2 = (x + 1, y + 1, z, voxel_id, 4)
@@ -87,7 +121,7 @@ def build_chunk_mesh(chunk_voxels: ndarray, format_size: int) -> ndarray:
                     index = add_data(vertex_data, index, v0, v1, v2, v0, v2, v3)
 
                 # Front face
-                if is_void((x, y, z + 1), chunk_voxels):
+                if is_void((x, y, z + 1), (wx, wy, wz + 1), world_voxels):
                     v0 = (x, y, z + 1, voxel_id, 5)
                     v1 = (x, y + 1, z + 1, voxel_id, 5)
                     v2 = (x + 1, y + 1, z + 1, voxel_id, 5)
