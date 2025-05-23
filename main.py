@@ -20,6 +20,8 @@ from pygame import (
 from moderngl import BLEND, CULL_FACE, DEPTH_TEST, create_context
 from sys import exit
 
+from settings import BACKGROUND_COLOR, WINDOW_RESOLUTION
+
 
 class Engine:
     def __init__(self) -> None:
@@ -35,12 +37,12 @@ class Engine:
         display.gl_set_attribute(GL_DEPTH_SIZE, 24)
 
         display.set_mode(
-            (1920, 1080), flags=FULLSCREEN | OPENGL | DOUBLEBUF
+            WINDOW_RESOLUTION, flags=FULLSCREEN | OPENGL | DOUBLEBUF
         )  # double buffering for smoother rendering
 
         event.set_grab(True)  # locks the mouse to the window
         mouse.set_visible(False)
-        mouse.set_pos(1920 * 0.5, 1080 * 0.5)
+        mouse.set_pos(WINDOW_RESOLUTION.x // 2, WINDOW_RESOLUTION.y // 2)
 
         self.context = create_context()
         # DEPTH_TEST:
@@ -63,7 +65,13 @@ class Engine:
 
         self.on_init()
 
+    def show_loading_screen(self) -> None:
+        self.context.clear(color=BACKGROUND_COLOR)
+        display.flip()
+
     def on_init(self) -> None:
+        self.show_loading_screen()
+
         print("Engine initialized")
         # TODO: Initialize game objects and resources here
         # For example, load shaders, textures, etc.
@@ -74,8 +82,8 @@ class Engine:
         display.set_caption(f"ft_vox - {self.clock.get_fps():.0f}fps")
 
     def render(self) -> None:
+        self.context.clear(color=BACKGROUND_COLOR)
         display.flip()
-        pass
 
     def handle_events(self) -> None:
         for e in event.get():
