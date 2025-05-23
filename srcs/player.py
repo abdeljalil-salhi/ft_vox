@@ -13,7 +13,7 @@ from settings import (
 from srcs.camera import Camera
 
 if TYPE_CHECKING:
-    from main import Engine
+    from srcs.engine import Engine
 
 
 class Player(Camera):

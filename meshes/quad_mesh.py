@@ -4,7 +4,7 @@ from numpy import hstack
 from meshes.base_mesh import BaseMesh
 
 if TYPE_CHECKING:
-    from main import Engine
+    from srcs.engine import Engine
 
 
 class QuadMesh(BaseMesh):

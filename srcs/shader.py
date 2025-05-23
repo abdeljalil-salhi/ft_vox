@@ -3,7 +3,7 @@ from glm import mat4
 from moderngl import Program
 
 if TYPE_CHECKING:
-    from main import Engine
+    from srcs.engine import Engine
 
 
 class Shader:

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from srcs.world import World
 
 if TYPE_CHECKING:
-    from main import Engine
+    from srcs.engine import Engine
 
 
 class Scene:

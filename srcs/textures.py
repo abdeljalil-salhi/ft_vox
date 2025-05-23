@@ -4,7 +4,7 @@ from pygame import image, transform
 
 
 if TYPE_CHECKING:
-    from main import Engine
+    from srcs.engine import Engine
 
 
 class Textures:
