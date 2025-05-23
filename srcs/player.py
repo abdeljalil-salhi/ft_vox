@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-from pygame import K_z, K_w, K_a, K_s, K_d, K_q, K_e, key, mouse
+from pygame import MOUSEBUTTONDOWN, K_z, K_w, K_a, K_s, K_d, K_q, K_e, key, mouse
 from glm import vec3
 from settings import (
     KEYBOARD_QWERTY,
@@ -31,6 +31,14 @@ class Player(Camera):
         self.keyboard_events()
         self.mouse_events()
         super().update()
+
+    def handle_mouse_events(self, event) -> None:
+        if event.type == MOUSEBUTTONDOWN:
+            voxel_handler = self.game.scene.world.voxel_handler
+            if event.button == 1:
+                voxel_handler.set_voxel()
+            elif event.button == 3:
+                voxel_handler.switch_interaction_mode()
 
     def mouse_events(self) -> None:
         mouse_dx, mouse_dy = mouse.get_rel()

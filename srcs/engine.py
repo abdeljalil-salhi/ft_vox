@@ -108,8 +108,7 @@ class Engine:
                 if e.key == K_h:
                     self.shading_mode = (self.shading_mode - 1) % 3
                     self.shader.chunk["shading_mode"].value = self.shading_mode
-            # TODO: Handle other events here
-            # For example, mouse movement, keyboard input, etc.
+            self.player.handle_mouse_events(e)
 
     def run(self) -> None:
         print("Engine is running")
