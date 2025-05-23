@@ -20,6 +20,9 @@ class ChunkMesh(BaseMesh):
         self.attrs = ("packed_data",)
         self.vao = self.get_vao()
 
+    def rebuild(self) -> None:
+        self.vao = self.get_vao()
+
     def get_vertex_data(self):
         mesh = build_chunk_mesh(
             self.chunk.voxels,

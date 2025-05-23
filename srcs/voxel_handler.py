@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 from glm import fract, ivec3, sign
 
+from objects.chunk import Chunk
 from settings import (
     CHUNK_AREA,
     CHUNK_SIZE,
@@ -23,7 +24,7 @@ class VoxelHandler:
         self.chunks = world.chunks
 
         # Ray casting related attributes
-        self.chunk = None
+        self.chunk: Chunk = None
         self.voxel_id = None
         self.voxel_index = None
         self.voxel_local_position = None
@@ -32,6 +33,7 @@ class VoxelHandler:
 
         # 0: Remove voxel, 1: Add voxel
         self.interaction_mode = 0
+        self.new_voxel_id = 1
 
     def update(self) -> None:
         self.ray_cast()
@@ -101,10 +103,21 @@ class VoxelHandler:
         return False
 
     def add_voxel(self) -> None:
-        pass
+        if self.voxel_id:
+            result = self.get_voxel_id(self.voxel_world_position + self.voxel_normal)
+
+            if not result[0]:
+                _, voxel_index, _, chunk = result
+                chunk.voxels[voxel_index] = self.new_voxel_id
+                chunk.mesh.rebuild()
+
+                if chunk.is_empty:
+                    chunk.is_empty = False
 
     def remove_voxel(self) -> None:
-        pass
+        if self.voxel_id:
+            self.chunk.voxels[self.voxel_index] = 0
+            self.chunk.mesh.rebuild()
 
     def get_voxel_id(self, voxel_world_position: ivec3) -> tuple:
         cx, cy, cz = chunk_position = voxel_world_position / CHUNK_SIZE
