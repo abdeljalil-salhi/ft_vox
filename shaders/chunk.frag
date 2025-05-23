@@ -9,6 +9,7 @@ uniform sampler2D unit_texture_0;
 
 in vec3 voxel_color;
 in vec2 uv;
+in float shading;
 
 void main()
 {
@@ -17,6 +18,7 @@ void main()
     texture_color = pow(texture_color, gamma);
     texture_color.rgb *= voxel_color;
     texture_color = pow(texture_color, inv_gamma);
+    texture_color *= shading;
 
     fragColor = vec4(texture_color, 1.0);
 }
