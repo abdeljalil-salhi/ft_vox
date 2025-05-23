@@ -10,6 +10,7 @@ from pygame import (
     KEYDOWN,
     OPENGL,
     QUIT,
+    K_h,
     init,
     quit,
     display,
@@ -67,6 +68,8 @@ class Engine:
         self.time = 0.0
         self.is_running = True
 
+        self.shading_mode = 2
+
         self.on_init()
 
     def show_loading_screen(self) -> None:
@@ -80,6 +83,8 @@ class Engine:
         self.player = Player(self)
         self.shader = Shader(self)
         self.scene = Scene(self)
+
+        self.shader.chunk["shading_mode"].value = self.shading_mode
 
     def update(self) -> None:
         self.player.update()
@@ -99,6 +104,10 @@ class Engine:
         for e in event.get():
             if e.type == QUIT or (e.type == KEYDOWN and e.key == K_ESCAPE):
                 self.is_running = False
+            if e.type == KEYDOWN:
+                if e.key == K_h:
+                    self.shading_mode = (self.shading_mode - 1) % 3
+                    self.shader.chunk["shading_mode"].value = self.shading_mode
             # TODO: Handle other events here
             # For example, mouse movement, keyboard input, etc.
 

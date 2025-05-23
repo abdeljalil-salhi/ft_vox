@@ -8,6 +8,7 @@ layout (location = 3) in int ao_id;
 uniform mat4 matrix_projection;
 uniform mat4 matrix_view;
 uniform mat4 matrix_model;
+uniform int shading_mode;
 
 out vec3 voxel_color;
 out vec2 uv;
@@ -48,6 +49,12 @@ void main()
     int uv_index = gl_VertexID % 6 + (face_id & 1) * 6;
     uv = uv_coords[uv_indices[uv_index]];
     voxel_color = hash31(voxel_id);
-    shading = face_shading[face_id] * ao_values[ao_id];
+
+    if (shading_mode == 0)
+        shading = 1.0;
+    else if (shading_mode == 1)
+        shading = face_shading[face_id];
+    else if (shading_mode == 2)
+        shading = face_shading[face_id] * ao_values[ao_id];
     gl_Position = matrix_projection * matrix_view * matrix_model * vec4(in_position, 1.0);
 }
