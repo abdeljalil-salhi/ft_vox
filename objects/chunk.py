@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-from glm import mat4, simplex, vec3, translate
+from glm import ivec3, mat4, simplex, vec2, vec3, translate
 from numpy import array, ndarray, zeros
 
 from meshes.chunk_mesh import ChunkMesh
@@ -35,10 +35,16 @@ class Chunk:
     def build_voxels(self) -> ndarray:
         voxels = zeros(CHUNK_VOLUME, dtype="uint8")
 
+        cx, cy, cz = ivec3(self.position) * CHUNK_SIZE
+
         for x in range(CHUNK_SIZE):
             for z in range(CHUNK_SIZE):
-                for y in range(CHUNK_SIZE):
-                    voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
-                        x + y + z if int(simplex(vec3(x, y, z) * 0.1) + 1) else 0
-                    )
+                wx = cx + x
+                wz = cz + z
+                world_height = int(simplex(vec2(wx, wz) * 0.01) * 32 + 32)
+                local_height = min(world_height - cy, CHUNK_SIZE)
+
+                for y in range(local_height):
+                    wy = y + cy
+                    voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = wy + 1
         return voxels
