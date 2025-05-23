@@ -89,25 +89,54 @@ def get_ao(
 def pack_data(
     x: int, y: int, z: int, voxel_id: int, face_id: int, ao_id: int, flip_id: int
 ) -> tuple:
-    # x: 6bit  y: 6bit  z: 6bit  voxel_id: 8bit  face_id: 3bit  ao_id: 2bit  flip_id: 1bit
+    """
+    Packs multiple voxel face attributes into a single 32-bit integer.
+
+    This function compresses the following values into a compact form:
+    - x, y, z: the voxel's position within the chunk (each uses 6 bits)
+    - voxel_id: the ID representing the type of the voxel (8 bits)
+    - face_id: which face is being represented (e.g., top, bottom, side) (3 bits)
+    - ao_id: ambient occlusion level (2 bits)
+    - flip_id: whether the face is flipped or not for shading consistency (1 bit)
+
+    The layout in the final 32-bit packed value is:
+        [ x:6 | y:6 | z:6 | voxel_id:8 | face_id:3 | ao_id:2 | flip_id:1 ]
+
+    Args:
+        x (int): X position in the chunk (0-63)
+        y (int): Y position in the chunk (0-63)
+        z (int): Z position in the chunk (0-63)
+        voxel_id (int): Voxel type ID (0-255)
+        face_id (int): Face index (0-7)
+        ao_id (int): AO shading value (0-3)
+        flip_id (int): Whether to flip the face's shading (0 or 1)
+
+    Returns:
+        int: A 32-bit integer encoding all the above values.
+    """
     a, b, c, d, e, f, g = x, y, z, voxel_id, face_id, ao_id, flip_id
 
+    # bit widths for each component
     b_bit, c_bit, d_bit, e_bit, f_bit, g_bit = 6, 6, 8, 3, 2, 1
-    fg_bit = f_bit + g_bit
-    efg_bit = e_bit + fg_bit
-    defg_bit = d_bit + efg_bit
-    cdefg_bit = c_bit + defg_bit
-    bcdefg_bit = b_bit + cdefg_bit
 
+    # Compute bit shifts needed to position each value correctly
+    fg_bit = f_bit + g_bit         # 2 + 1 = 3
+    efg_bit = e_bit + fg_bit       # 3 + 3 = 6
+    defg_bit = d_bit + efg_bit     # 8 + 6 = 14
+    cdefg_bit = c_bit + defg_bit   # 6 + 14 = 20
+    bcdefg_bit = b_bit + cdefg_bit # 6 + 20 = 26
+
+    # Pack values using bitwise shifts and ORs to compress into one integer
     packed_data = (
-        a << bcdefg_bit
-        | b << cdefg_bit
-        | c << defg_bit
-        | d << efg_bit
-        | e << fg_bit
-        | f << g_bit
-        | g
+        a << bcdefg_bit |   # x shifted to highest position
+        b << cdefg_bit   |  # y shifted to 2nd highest position
+        c << defg_bit    |  # z shifted after y
+        d << efg_bit     |  # voxel_id
+        e << fg_bit      |  # face_id
+        f << g_bit       |  # ao_id
+        g                 # flip_id at the least significant bit
     )
+
     return packed_data
 
 
