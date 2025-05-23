@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 from glm import fract, ivec3, sign
 
+from meshes.chunk_mesh_builder import get_chunk_index
 from objects.chunk import Chunk
 from settings import (
     CHUNK_AREA,
@@ -102,6 +103,28 @@ class VoxelHandler:
 
         return False
 
+    def rebuild_adjacent_chunk(self, adjacent_voxel_position) -> None:
+        index = get_chunk_index(adjacent_voxel_position)
+        if index != -1:
+            self.chunks[index].mesh.rebuild()
+
+    def rebuild_adjacent_chunks(self) -> None:
+        lx, ly, lz = self.voxel_local_position
+        wx, wy, wz = self.voxel_world_position
+
+        if lx == 0:
+            self.rebuild_adjacent_chunk((wx - 1, wy, wz))
+        elif lx == CHUNK_SIZE - 1:
+            self.rebuild_adjacent_chunk((wx + 1, wy, wz))
+        if ly == 0:
+            self.rebuild_adjacent_chunk((wx, wy - 1, wz))
+        elif ly == CHUNK_SIZE - 1:
+            self.rebuild_adjacent_chunk((wx, wy + 1, wz))
+        if lz == 0:
+            self.rebuild_adjacent_chunk((wx, wy, wz - 1))
+        elif lz == CHUNK_SIZE - 1:
+            self.rebuild_adjacent_chunk((wx, wy, wz + 1))
+
     def add_voxel(self) -> None:
         if self.voxel_id:
             result = self.get_voxel_id(self.voxel_world_position + self.voxel_normal)
@@ -117,7 +140,9 @@ class VoxelHandler:
     def remove_voxel(self) -> None:
         if self.voxel_id:
             self.chunk.voxels[self.voxel_index] = 0
+
             self.chunk.mesh.rebuild()
+            self.rebuild_adjacent_chunks()
 
     def get_voxel_id(self, voxel_world_position: ivec3) -> tuple:
         cx, cy, cz = chunk_position = voxel_world_position / CHUNK_SIZE
