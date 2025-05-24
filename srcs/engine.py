@@ -118,10 +118,6 @@ class Engine:
                 elif e.key == K_t:
                     self.textures_enabled = not self.textures_enabled
                     self.shader.chunk["textures_enabled"].value = self.textures_enabled
-                    # TODO: Move to shader level
-                    for chunk in self.scene.world.chunks:
-                        chunk.voxels = chunk.build_voxels()
-                        chunk.build_mesh()
             self.player.handle_mouse_events(e)
 
     def run(self) -> None:
