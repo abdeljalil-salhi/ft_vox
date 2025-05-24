@@ -1,9 +1,11 @@
 from math import hypot
 from random import random
 from numba import njit
+from numpy import ndarray
 
+from objects.texturing import TerrainLevel, Texture
 from srcs.noise import noise2, noise3
-from settings import CENTER_XZ, CENTER_Y
+from settings import CENTER_XZ, CENTER_Y, CHUNK_AREA, CHUNK_SIZE
 
 
 @njit
@@ -33,3 +35,40 @@ def get_height(x: int, z: int) -> int:
     height += noise2(x * frequency8, z * frequency8) * amplitude8 - amplitude8
 
     return int(max(height, 1) * island)
+
+
+@njit
+def get_index(x: int, y: int, z: int) -> int:
+    return x + CHUNK_SIZE * z + CHUNK_AREA * y
+
+
+@njit
+def set_voxel_id(
+    voxels: ndarray,
+    x: int,
+    y: int,
+    z: int,
+    wx: int,
+    wy: int,
+    wz: int,
+    world_height: int,
+) -> None:
+    voxel_id = 0
+
+    if wy < world_height - 1:
+        voxel_id = Texture.STONE.value
+    else:
+        rng = int(7 * random())
+        ry = wy - rng
+        if TerrainLevel.SNOW.value <= ry < world_height:
+            voxel_id = Texture.SNOW.value
+        elif TerrainLevel.STONE.value <= ry < TerrainLevel.SNOW.value:
+            voxel_id = Texture.STONE.value
+        elif TerrainLevel.DIRT.value <= ry < TerrainLevel.STONE.value:
+            voxel_id = Texture.DIRT.value
+        elif TerrainLevel.GRASS.value <= ry < TerrainLevel.DIRT.value:
+            voxel_id = Texture.GRASS.value
+        else:
+            voxel_id = Texture.SAND.value
+
+    voxels[get_index(x, y, z)] = voxel_id

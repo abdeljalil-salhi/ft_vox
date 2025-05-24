@@ -22,7 +22,8 @@ from pygame import (
 from moderngl import BLEND, CULL_FACE, DEPTH_TEST, create_context
 from sys import exit
 
-from settings import SKYBOX_COLOR, WINDOW_RESOLUTION, WINDOW_TITLE
+from objects.texturing import SKYBOX_COLOR
+from settings import WINDOW_RESOLUTION, WINDOW_TITLE
 from srcs.player import Player
 from srcs.scene import Scene
 from srcs.shader import Shader

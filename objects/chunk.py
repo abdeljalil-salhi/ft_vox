@@ -6,7 +6,7 @@ from numba import njit
 
 from meshes.chunk_mesh import ChunkMesh
 from settings import CHUNK_AREA, CHUNK_SIZE, CHUNK_VOLUME, SHOW_CHUNKS
-from srcs.terrain_generation import get_height
+from srcs.terrain_generation import get_height, set_voxel_id
 
 
 if TYPE_CHECKING:
@@ -85,9 +85,10 @@ class Chunk:
 
                 for y in range(local_height):
                     wy = y + cy
-                    voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
-                        chunk_color if SHOW_CHUNKS else 1
-                    )
+                    set_voxel_id(voxels, x, y, z, wx, wy, wz, world_height)
+                    # voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
+                    #     chunk_color if SHOW_CHUNKS else 1
+                    # )
                     # voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
                     #     2 if self.game.get_textures_enabled() else wy + 1
                     # )
