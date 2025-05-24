@@ -1,6 +1,8 @@
 from enum import Enum
 from glm import vec3
 
+from settings import CHUNK_SIZE, WORLD_WIDTH
+
 
 # Color constants
 SKYBOX_COLOR = vec3(0.58, 0.83, 0.99)
@@ -37,3 +39,8 @@ class TerrainLevel(Enum):
 TREE_PROBABILITY = 0.02
 TREE_WIDTH, TREE_HEIGHT = 4, 8
 TREE_H_WIDTH, TREE_H_HEIGHT = TREE_WIDTH // 2, TREE_HEIGHT // 2
+
+
+# Water settings
+WATER_LINE = 5.8
+WATER_AREA = 5 * CHUNK_SIZE * WORLD_WIDTH

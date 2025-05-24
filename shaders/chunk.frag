@@ -13,14 +13,17 @@ uniform sampler2D unit_no_texture;
 uniform sampler2DArray unit_texture_array;
 // Skybox color for fog effect
 uniform vec3 skybox_color;
+// Water line height for water effect
+uniform float water_line;
 
 // Flag to enable/disable texture mapping
 uniform bool textures_enabled;
 
 // Interpolated values from the vertex shader
-in vec3 voxel_color;   // Color derived from voxel_id hashing
-in vec2 uv;            // UV coordinates for sampling the texture
-in float shading;      // Shading intensity based on face and AO
+in vec3 voxel_color;              // Color derived from voxel_id hashing
+in vec2 uv;                       // UV coordinates for sampling the texture
+in float shading;                 // Shading intensity based on face and AO
+in vec3 fragment_world_position;  // World position of the fragment
 
 // Interpolated values from the geometry shader
 flat in int voxel_id;  // Unique identifier for voxel type (used for hashing color)
@@ -55,6 +58,10 @@ void main()
 
     // Apply final shading (includes directional and/or AO)
     texture_color *= shading;
+
+    // Apply water effect if fragment is below the water line
+    if (fragment_world_position.y < water_line)
+        texture_color *= vec3(0.0, 0.3, 1.0);
 
     // Apply fog effect based on distance from camera
     float fog_distance = gl_FragCoord.z / gl_FragCoord.w;

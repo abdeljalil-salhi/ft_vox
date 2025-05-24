@@ -19,9 +19,11 @@ flat out int face_id;  // Face direction index (0–5)
 uniform int shading_mode;
 
 // Outputs to the fragment shader
-out vec3 voxel_color;  // Final color for this voxel
-out vec2 uv;           // UV coordinate for this vertex
-out float shading;     // Shading intensity based on face direction and AO
+out vec3 voxel_color;              // Final color for this voxel
+out vec2 uv;                       // UV coordinate for this vertex
+out float shading;                 // Shading intensity based on face direction and AO
+out vec3 fragment_world_position;  // World position of the fragment for underwater effects
+
 
 // Ambient Occlusion brightness levels (0 = darkest, 3 = brightest)
 const float ao_values[4] = float[4](
@@ -126,7 +128,11 @@ void main()
         shading = face_shading[face_id];  // Directional lighting
     else if (shading_mode == 2)
         shading = face_shading[face_id] * ao_values[ao_id];  // Directional + AO
+    
+    // Set fragment world position
+    // This is the position in world space, used for effects like underwater rendering
+    fragment_world_position = (matrix_model * vec4(in_position, 1.0)).xyz;
 
     // Final position in clip space
-    gl_Position = matrix_projection * matrix_view * matrix_model * vec4(in_position, 1.0);
+    gl_Position = matrix_projection * matrix_view * vec4(fragment_world_position, 1.0);
 }

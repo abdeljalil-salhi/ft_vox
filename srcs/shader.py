@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from glm import mat4
 from moderngl import Program
 
-from objects.texturing import SKYBOX_COLOR
+from objects.texturing import SKYBOX_COLOR, WATER_AREA, WATER_LINE
 
 if TYPE_CHECKING:
     from srcs.engine import Engine
@@ -15,6 +15,7 @@ class Shader:
         self.player = game.player
         self.chunk = self.get_program("chunk")
         self.voxel_marker = self.get_program("voxel_marker")
+        self.water = self.get_program("water")
 
         self.set_uniforms_on_init()
 
@@ -22,12 +23,18 @@ class Shader:
         self.chunk["matrix_projection"].write(self.player.matrix_projection)
         self.chunk["matrix_model"].write(mat4())
         self.chunk["skybox_color"].write(SKYBOX_COLOR)
+        self.chunk["water_line"] = WATER_LINE
         self.chunk["unit_no_texture"] = 0
         self.chunk["unit_texture_array"] = 1
 
         self.voxel_marker["matrix_projection"].write(self.player.matrix_projection)
         self.voxel_marker["matrix_model"].write(mat4())
         self.voxel_marker["unit_texture"] = 0
+
+        self.water["matrix_projection"].write(self.player.matrix_projection)
+        self.water["unit_texture"] = 2
+        self.water["water_area"] = WATER_AREA
+        self.water["water_line"] = WATER_LINE
 
     def update(self) -> None:
         """
@@ -36,6 +43,7 @@ class Shader:
         """
         self.chunk["matrix_view"].write(self.player.matrix_view)
         self.voxel_marker["matrix_view"].write(self.player.matrix_view)
+        self.water["matrix_view"].write(self.player.matrix_view)
 
     def get_program(self, shader_name: str) -> Program:
         """
