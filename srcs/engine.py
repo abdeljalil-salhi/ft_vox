@@ -124,7 +124,6 @@ class Engine:
             self.player.handle_mouse_events(e)
 
     def run(self) -> None:
-        print("Engine is running")
         while self.is_running:
             self.handle_events()
             self.update()

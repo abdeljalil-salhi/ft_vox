@@ -2,9 +2,11 @@ import random
 from typing import TYPE_CHECKING
 from glm import ivec3, mat4, simplex, vec2, vec3, translate
 from numpy import array, ndarray, zeros
+from numba import njit
 
 from meshes.chunk_mesh import ChunkMesh
 from settings import CHUNK_AREA, CHUNK_SIZE, CHUNK_VOLUME, SHOW_CHUNKS
+from srcs.terrain_generation import get_height
 
 
 if TYPE_CHECKING:
@@ -44,25 +46,48 @@ class Chunk:
         voxels = zeros(CHUNK_VOLUME, dtype="uint8")
 
         cx, cy, cz = ivec3(self.position) * CHUNK_SIZE
-        # chunk_color = random.randrange(1, 100)
 
-        for x in range(CHUNK_SIZE):
-            for z in range(CHUNK_SIZE):
-                wx = cx + x
-                wz = cz + z
-                world_height = int(simplex(vec2(wx, wz) * 0.01) * 32 + 32)
-                local_height = min(world_height - cy, CHUNK_SIZE)
+        self.generate_terrain(voxels, cx, cy, cz)
 
-                for y in range(local_height):
-                    wy = y + cy
-                    # voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
-                    #     chunk_color if SHOW_CHUNKS else wy + 1
-                    # )
-                    voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
-                        2 if self.game.get_textures_enabled() else wy + 1
-                    )
+        # for x in range(CHUNK_SIZE):
+        #     for z in range(CHUNK_SIZE):
+        #         wx = cx + x
+        #         wz = cz + z
+        #         world_height = int(simplex(vec2(wx, wz) * 0.01) * 32 + 32)
+        #         local_height = min(world_height - cy, CHUNK_SIZE)
+
+        #         for y in range(local_height):
+        #             wy = y + cy
+        #             # voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
+        #             #     chunk_color if SHOW_CHUNKS else wy + 1
+        #             # )
+        #             voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
+        #                 2 if self.game.get_textures_enabled() else wy + 1
+        #             )
 
         if any(voxels):
             self.is_empty = False
 
         return voxels
+
+    @staticmethod
+    @njit
+    def generate_terrain(voxels: ndarray, cx: int, cy: int, cz: int) -> None:
+        if SHOW_CHUNKS:
+            chunk_color = random.randrange(1, 100)
+
+        for x in range(CHUNK_SIZE):
+            wx = cx + x
+            for z in range(CHUNK_SIZE):
+                wz = cz + z
+                world_height = get_height(wx, wz)
+                local_height = min(world_height - cy, CHUNK_SIZE)
+
+                for y in range(local_height):
+                    wy = y + cy
+                    voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
+                        chunk_color if SHOW_CHUNKS else 1
+                    )
+                    # voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
+                    #     2 if self.game.get_textures_enabled() else wy + 1
+                    # )
