@@ -33,7 +33,7 @@ def get_height(x: int, z: int) -> int:
 
     # Erosion effect
     if noise2(0.1 * x, 0.1 * z) < 0:
-        amplitude1 /= 1.07
+        amplitude1 /= 1.05
 
     # Terrain generation
     height = noise2(x * frequency1, z * frequency1) * amplitude1 + amplitude1
