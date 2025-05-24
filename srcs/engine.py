@@ -90,6 +90,8 @@ class Engine:
         self.shader = Shader(self)
         self.scene = Scene(self)
 
+        self.player.on_init()
+
         self.shader.chunk["shading_mode"].value = self.shading_mode
         self.shader.chunk["textures_enabled"].value = self.textures_enabled
 

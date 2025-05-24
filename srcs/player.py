@@ -58,6 +58,13 @@ class Player(Camera):
         """
         self.game = game
         super().__init__(position, yaw, pitch)
+    
+    def on_init(self) -> None:
+        """
+        Should be called once at the start of the game.
+        Used to check for collision in Camera level.
+        """
+        self.world = self.game.scene.world
 
     def update(self) -> None:
         """

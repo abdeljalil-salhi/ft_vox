@@ -65,6 +65,7 @@ class Camera:
         self.matrix_view = mat4()
 
         self.frustum = Frustum(self)
+        self.world: "World" = None  # Will be set by the player.on_init method
 
     def update(self) -> None:
         """
