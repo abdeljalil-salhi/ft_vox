@@ -1,12 +1,13 @@
 from typing import TYPE_CHECKING
 
-from glm import fract, ivec3, sign
+from glm import fract, ivec3, sign, vec3
 
 from meshes.chunk_mesh_builder import get_chunk_index
 from objects.chunk import Chunk
 from settings import (
     CHUNK_AREA,
     CHUNK_SIZE,
+    EYE_HEIGHT,
     MAX_RAY_DISTANCE,
     WORLD_AREA,
     WORLD_DEPTH,
@@ -40,10 +41,9 @@ class VoxelHandler:
         self.ray_cast()
 
     def ray_cast(self) -> bool:
-        x1, y1, z1 = self.game.player.position
-        x2, y2, z2 = (
-            self.game.player.position + self.game.player.forward * MAX_RAY_DISTANCE
-        )
+        eye_position = self.game.player.position + vec3(0, EYE_HEIGHT, 0)
+        x1, y1, z1 = eye_position
+        x2, y2, z2 = eye_position + self.game.player.forward * MAX_RAY_DISTANCE
 
         current_voxel_position = ivec3(x1, y1, z1)
         self.voxel_id = 0
