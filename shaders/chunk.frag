@@ -11,6 +11,8 @@ const vec3 inv_gamma = 1.0 / gamma;    // Inverse for linear-to-sRGB conversion
 uniform sampler2D unit_no_texture;
 // Texture sampler for texture array
 uniform sampler2DArray unit_texture_array;
+// Skybox color for fog effect
+uniform vec3 skybox_color;
 
 // Flag to enable/disable texture mapping
 uniform bool textures_enabled;
@@ -53,6 +55,10 @@ void main()
 
     // Apply final shading (includes directional and/or AO)
     texture_color *= shading;
+
+    // Apply fog effect based on distance from camera
+    float fog_distance = gl_FragCoord.z / gl_FragCoord.w;
+    texture_color = mix(texture_color, skybox_color, (1.0 - exp2(-0.00001 * fog_distance * fog_distance)));
 
     // Convert back to sRGB space (linear to sRGB)
     texture_color = pow(texture_color, inv_gamma);
