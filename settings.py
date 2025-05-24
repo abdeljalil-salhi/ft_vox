@@ -1,5 +1,5 @@
-from glm import atan, radians, tan, vec2, vec3
-from math import sqrt
+from glm import radians, vec2, vec3
+from math import atan, tan, sqrt
 
 
 # GAME SETTINGS
@@ -29,7 +29,7 @@ CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE
 CHUNK_VOLUME = CHUNK_SIZE * CHUNK_AREA
 CHUNK_SPHERE_RADIUS = H_CHUNK_SIZE * sqrt(3.0)
 
-WORLD_WIDTH, WORLD_HEIGHT = 30, 2
+WORLD_WIDTH, WORLD_HEIGHT = 100, 2
 WORLD_DEPTH = WORLD_WIDTH
 WORLD_AREA = WORLD_WIDTH * WORLD_DEPTH
 WORLD_VOLUME = WORLD_HEIGHT * WORLD_AREA

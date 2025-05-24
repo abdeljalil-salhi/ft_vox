@@ -1,11 +1,11 @@
-import random
 from typing import TYPE_CHECKING
-from glm import ivec3, mat4, simplex, vec2, vec3, translate
-from numpy import array, ndarray, zeros
+from random import randrange
+from glm import ivec3, mat4, vec3, translate
+from numpy import ndarray, zeros, any
 from numba import njit
 
 from meshes.chunk_mesh import ChunkMesh
-from settings import CHUNK_AREA, CHUNK_SIZE, CHUNK_VOLUME, SHOW_CHUNKS
+from settings import CHUNK_SIZE, CHUNK_VOLUME, SHOW_CHUNKS
 from srcs.terrain_generation import get_height, set_voxel_id
 
 
@@ -18,7 +18,6 @@ class Chunk:
         self.game = world.game
         self.world = world
         self.position = position
-        self.shader = self.game.shader.chunk
         self.matrix_model = self.get_model_matrix()
         self.voxels: ndarray = None
         self.mesh: ChunkMesh = None
@@ -74,7 +73,7 @@ class Chunk:
     @njit
     def generate_terrain(voxels: ndarray, cx: int, cy: int, cz: int) -> None:
         if SHOW_CHUNKS:
-            chunk_color = random.randrange(1, 100)
+            chunk_color = randrange(1, 100)
 
         for x in range(CHUNK_SIZE):
             wx = cx + x
