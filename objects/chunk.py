@@ -16,6 +16,7 @@ class Chunk:
         self.game = world.game
         self.world = world
         self.position = position
+        self.shader = self.game.shader.chunk
         self.matrix_model = self.get_model_matrix()
         self.voxels: ndarray = None
         self.mesh: ChunkMesh = None
@@ -43,7 +44,7 @@ class Chunk:
         voxels = zeros(CHUNK_VOLUME, dtype="uint8")
 
         cx, cy, cz = ivec3(self.position) * CHUNK_SIZE
-        chunk_color = random.randrange(1, 100)
+        # chunk_color = random.randrange(1, 100)
 
         for x in range(CHUNK_SIZE):
             for z in range(CHUNK_SIZE):
@@ -54,8 +55,11 @@ class Chunk:
 
                 for y in range(local_height):
                     wy = y + cy
+                    # voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
+                    #     chunk_color if SHOW_CHUNKS else wy + 1
+                    # )
                     voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (
-                        chunk_color if SHOW_CHUNKS else wy + 1
+                        2 if self.game.get_textures_enabled() else wy + 1
                     )
 
         if any(voxels):

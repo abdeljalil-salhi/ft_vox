@@ -4,8 +4,6 @@ layout (location = 0) in uint packed_data;
 
 // Unpacked attributes
 int x, y, z;           // Voxel position
-int voxel_id;          // Unique identifier for voxel type (used for hashing color)
-int face_id;           // Face direction index (0–5)
 int ao_id;             // Ambient occlusion level (0–3)
 int flip_id;           // Indicates flipped face for UV mapping (0 or 1)
 
@@ -13,6 +11,9 @@ int flip_id;           // Indicates flipped face for UV mapping (0 or 1)
 uniform mat4 matrix_projection;
 uniform mat4 matrix_view;
 uniform mat4 matrix_model;
+
+flat out int voxel_id; // Unique identifier for voxel type (used for hashing color)
+flat out int face_id;  // Face direction index (0–5)
 
 // Shading mode (0 = flat, 1 = directional, 2 = directional + AO)
 uniform int shading_mode;

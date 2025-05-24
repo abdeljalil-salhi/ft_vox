@@ -11,6 +11,7 @@ from pygame import (
     OPENGL,
     QUIT,
     K_h,
+    K_t,
     init,
     quit,
     display,
@@ -21,7 +22,7 @@ from pygame import (
 from moderngl import BLEND, CULL_FACE, DEPTH_TEST, create_context
 from sys import exit
 
-from settings import SKYBOX_COLOR, WINDOW_RESOLUTION
+from settings import SKYBOX_COLOR, WINDOW_RESOLUTION, WINDOW_TITLE
 from srcs.player import Player
 from srcs.scene import Scene
 from srcs.shader import Shader
@@ -69,8 +70,12 @@ class Engine:
         self.is_running = True
 
         self.shading_mode = 2
+        self.textures_enabled = True
 
         self.on_init()
+
+    def get_textures_enabled(self) -> bool:
+        return self.textures_enabled
 
     def show_loading_screen(self) -> None:
         self.context.clear(color=SKYBOX_COLOR)
@@ -85,6 +90,7 @@ class Engine:
         self.scene = Scene(self)
 
         self.shader.chunk["shading_mode"].value = self.shading_mode
+        self.shader.chunk["textures_enabled"].value = self.textures_enabled
 
     def update(self) -> None:
         self.player.update()
@@ -93,7 +99,7 @@ class Engine:
 
         self.delta_time = self.clock.tick()
         self.time = time.get_ticks() * 0.001
-        display.set_caption(f"ft_vox - {self.clock.get_fps():.0f}fps")
+        display.set_caption(f"{WINDOW_TITLE} - {self.clock.get_fps():.0f}fps")
 
     def render(self) -> None:
         self.context.clear(color=SKYBOX_COLOR)
@@ -108,6 +114,13 @@ class Engine:
                 if e.key == K_h:
                     self.shading_mode = (self.shading_mode - 1) % 3
                     self.shader.chunk["shading_mode"].value = self.shading_mode
+                elif e.key == K_t:
+                    self.textures_enabled = not self.textures_enabled
+                    self.shader.chunk["textures_enabled"].value = self.textures_enabled
+                    # TODO: Move to shader level
+                    for chunk in self.scene.world.chunks:
+                        chunk.voxels = chunk.build_voxels()
+                        chunk.build_mesh()
             self.player.handle_mouse_events(e)
 
     def run(self) -> None:
