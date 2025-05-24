@@ -5,7 +5,6 @@ layout (location = 1) in vec3 in_position;       // Vertex position (local)
 
 uniform mat4 matrix_projection;                 // Projection matrix (perspective)
 uniform mat4 matrix_view;                       // View matrix (camera)
-uniform mat4 matrix_view_projection;            // Unused here
 uniform int water_area;                         // Controls water size (scaling factor)
 uniform float water_line;                       // Vertical height of water surface
 

@@ -8,7 +8,6 @@ const vec3 inv_gamma = 1 / gamma;        // Inverse gamma for final correction
 in vec2 uv;                              // Interpolated texture coordinates from vertex shader
 
 uniform sampler2D unit_texture;         // Water texture
-uniform float water_line;               // Vertical height of water surface
 
 void main(void)
 {
