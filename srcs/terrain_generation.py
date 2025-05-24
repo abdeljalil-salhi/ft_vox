@@ -3,7 +3,14 @@ from random import random
 from numba import njit
 from numpy import ndarray
 
-from objects.texturing import TerrainLevel, Texture
+from objects.texturing import (
+    TREE_H_HEIGHT,
+    TREE_H_WIDTH,
+    TREE_HEIGHT,
+    TREE_PROBABILITY,
+    TerrainLevel,
+    Texture,
+)
 from srcs.noise import noise2, noise3
 from settings import CENTER_XZ, CENTER_Y, CHUNK_AREA, CHUNK_SIZE
 
@@ -79,3 +86,41 @@ def set_voxel_id(
             voxel_id = Texture.SAND.value
 
     voxels[get_index(x, y, z)] = voxel_id
+
+    if wy < TerrainLevel.DIRT.value:
+        generate_tree(voxels, x, y, z, voxel_id)
+
+
+@njit
+def generate_tree(voxels: ndarray, x: int, y: int, z: int, voxel_id: int):
+    if voxel_id != Texture.GRASS.value or random() > TREE_PROBABILITY:
+        return None
+    if y + TREE_HEIGHT >= CHUNK_SIZE:
+        return None
+    if x - TREE_H_WIDTH < 0 or x + TREE_H_WIDTH >= CHUNK_SIZE:
+        return None
+    if z - TREE_H_WIDTH < 0 or z + TREE_H_WIDTH >= CHUNK_SIZE:
+        return None
+
+    # Generate dirt under the tree
+    voxels[get_index(x, y, z)] = Texture.DIRT.value
+
+    # Generate leaves
+    m = 0
+    for n, iy in enumerate(range(TREE_H_HEIGHT, TREE_HEIGHT - 1)):
+        k = iy % 2
+        rng = int(random() * 2)
+        for ix in range(-TREE_H_WIDTH + m, TREE_H_WIDTH - m * rng):
+            for iz in range(-TREE_H_WIDTH + m * rng, TREE_H_WIDTH - m):
+                if (ix + iz) % 4:
+                    voxels[get_index(x + ix + k, y + iy, z + iz + k)] = (
+                        Texture.NORMAL_LEAVES.value
+                    )
+        m += 1 if n > 0 else 3 if n > 1 else 0
+
+    # Generate tree trunk
+    for iy in range(1, TREE_HEIGHT - 2):
+        voxels[get_index(x, y + iy, z)] = Texture.WOOD.value
+
+    # Generate tree top
+    voxels[get_index(x, y + TREE_HEIGHT - 2, z)] = Texture.NORMAL_LEAVES.value

@@ -2,6 +2,7 @@ from enum import Enum
 from glm import vec3
 
 
+# Color constants
 SKYBOX_COLOR = vec3(0.58, 0.83, 0.99)
 
 
@@ -30,3 +31,9 @@ class TerrainLevel(Enum):
     DIRT = 40
     STONE = 49
     SNOW = 54
+
+
+# Tree settings
+TREE_PROBABILITY = 0.02
+TREE_WIDTH, TREE_HEIGHT = 4, 8
+TREE_H_WIDTH, TREE_H_HEIGHT = TREE_WIDTH // 2, TREE_HEIGHT // 2
