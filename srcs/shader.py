@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING
 from glm import mat4
 from moderngl import Program
 
-from objects.texturing import SKYBOX_COLOR, WATER_AREA, WATER_LINE
+from objects.texturing import CLOUD_SCALE, SKYBOX_COLOR, WATER_AREA, WATER_LINE
+from settings import CENTER_XZ
 
 if TYPE_CHECKING:
     from srcs.engine import Engine
@@ -16,6 +17,7 @@ class Shader:
         self.chunk = self.get_program("chunk")
         self.voxel_marker = self.get_program("voxel_marker")
         self.water = self.get_program("water")
+        self.clouds = self.get_program("clouds")
 
         self.set_uniforms_on_init()
 
@@ -36,6 +38,11 @@ class Shader:
         self.water["water_area"] = WATER_AREA
         self.water["water_line"] = WATER_LINE
 
+        self.clouds["matrix_projection"].write(self.player.matrix_projection)
+        self.clouds["center"] = CENTER_XZ
+        self.clouds["skybox_color"].write(SKYBOX_COLOR)
+        self.clouds["cloud_scale"] = CLOUD_SCALE
+
     def update(self) -> None:
         """
         Update the shader program if needed.
@@ -44,11 +51,12 @@ class Shader:
         self.chunk["matrix_view"].write(self.player.matrix_view)
         self.voxel_marker["matrix_view"].write(self.player.matrix_view)
         self.water["matrix_view"].write(self.player.matrix_view)
+        self.clouds["matrix_view"].write(self.player.matrix_view)
 
     def get_program(self, shader_name: str) -> Program:
         """
         Loads and compiles a shader program using a vertex and fragment shader
-        stored in the 'shaders/' directory. Returns a ModernGL Program object.
+        stored in the `shaders/` directory. Returns a ModernGL Program object.
 
         Args:
             shader_name (str): The name of the shader file without extension.

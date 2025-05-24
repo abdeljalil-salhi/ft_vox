@@ -1,7 +1,7 @@
 from enum import Enum
 from glm import vec3
 
-from settings import CHUNK_SIZE, WORLD_WIDTH
+from settings import CHUNK_SIZE, WORLD_HEIGHT, WORLD_WIDTH
 
 
 # Color constants
@@ -10,6 +10,10 @@ SKYBOX_COLOR = vec3(0.58, 0.83, 0.99)
 
 # Textures IDs
 class Texture(Enum):
+    """
+    Enum representing different texture IDs used in the game.
+    """
+
     SAND = 1
     GRASS = 2
     DIRT = 3
@@ -28,6 +32,10 @@ class Texture(Enum):
 
 # Terrain levels
 class TerrainLevel(Enum):
+    """
+    Enum representing different terrain levels in the game.
+    """
+
     SAND = 7
     GRASS = 8
     DIRT = 40
@@ -44,3 +52,8 @@ TREE_H_WIDTH, TREE_H_HEIGHT = TREE_WIDTH // 2, TREE_HEIGHT // 2
 # Water settings
 WATER_LINE = 5.8
 WATER_AREA = 5 * CHUNK_SIZE * WORLD_WIDTH
+
+
+# Cloud settings
+CLOUD_SCALE = 25
+CLOUD_HEIGHT = WORLD_HEIGHT * CHUNK_SIZE * 2
