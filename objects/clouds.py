@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from meshes.cloud_mesh import CloudMesh
+from objects.texturing import CLOUD_COLOR
 
 if TYPE_CHECKING:
     from srcs.engine import Engine
@@ -24,6 +25,7 @@ class Clouds:
         This allows clouds to animate or shift over time.
         """
         self.mesh.shader["unit_time"] = self.game.time
+        self.mesh.shader["cloud_color"] = CLOUD_COLOR
 
     def render(self) -> None:
         """

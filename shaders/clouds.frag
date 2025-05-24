@@ -3,11 +3,10 @@
 // Output color of the pixel
 layout (location = 0) out vec4 fragColor;
 
-// Constant white cloud color
-const vec3 cloud_color = vec3(1);  // RGB = (1,1,1) => white
-
 // Skybox color (background color)
 uniform vec3 skybox_color;
+// Cloud color
+uniform vec3 cloud_color;
 
 void main(void)
 {
