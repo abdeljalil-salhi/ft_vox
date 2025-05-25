@@ -60,3 +60,9 @@ WATER_AREA = 5 * CHUNK_SIZE * WORLD_WIDTH
 CLOUD_COLOR = vec3(1.0, 1.0, 1.0)
 CLOUD_SCALE = 25
 CLOUD_HEIGHT = WORLD_HEIGHT * CHUNK_SIZE * 2
+
+# Cluster parameters
+CLUSTER_FREQUENCY = 0.05  # Frequency changes every 50 voxels (higher = more frequent)
+CLUSTER_THRESHOLD = (
+    0.8  # Threshold for placing a cluster; > 0.8 in [-1, 1] noise (higher = rarer)
+)

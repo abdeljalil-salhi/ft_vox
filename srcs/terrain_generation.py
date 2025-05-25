@@ -5,6 +5,8 @@ from numpy import ndarray
 
 from objects.texturing import (
     BEEHIVE_PROBABILITY,
+    CLUSTER_FREQUENCY,
+    CLUSTER_THRESHOLD,
     TREE_H_HEIGHT,
     TREE_H_WIDTH,
     TREE_HEIGHT,
@@ -71,7 +73,10 @@ def set_voxel_id(
         ):
             voxel_id = 0
         else:
-            voxel_id = Texture.STONE.value
+            if is_in_cluster(wx, wy, wz):
+                voxel_id = Texture.DIAMOND_ORE.value
+            else:
+                voxel_id = Texture.STONE.value
     else:
         rng = int(7 * random())
         ry = wy - rng
@@ -90,6 +95,23 @@ def set_voxel_id(
 
     if wy < TerrainLevel.DIRT.value:
         generate_tree(voxels, x, y, z, voxel_id, wx, wz)
+
+
+@njit
+def is_in_cluster(wx: int, wy: int, wz: int) -> bool:
+    # Check if this position is near a cluster center
+    for dx in range(-1, 2):
+        for dy in range(-1, 2):
+            for dz in range(-1, 2):
+                if abs(dx) + abs(dy) + abs(dz) <= 1:  # Adjacent voxels only
+                    noise_value = noise3(
+                        (wx + dx) * CLUSTER_FREQUENCY,
+                        (wy + dy) * CLUSTER_FREQUENCY,
+                        (wz + dz) * CLUSTER_FREQUENCY,
+                    )
+                    if noise_value > CLUSTER_THRESHOLD:
+                        return True
+    return False
 
 
 @njit
