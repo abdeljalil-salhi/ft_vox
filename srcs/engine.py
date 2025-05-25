@@ -24,6 +24,7 @@ from sys import exit
 
 from objects.texturing import SKYBOX_COLOR
 from settings import WINDOW_RESOLUTION, WINDOW_TITLE
+from srcs.mixer import Mixer
 from srcs.player import Player
 from srcs.scene import Scene
 from srcs.shader import Shader
@@ -89,6 +90,7 @@ class Engine:
         self.player = Player(self)
         self.shader = Shader(self)
         self.scene = Scene(self)
+        self.mixer = Mixer()
 
         self.player.on_init()
 
@@ -127,5 +129,6 @@ class Engine:
             self.handle_events()
             self.update()
             self.render()
+            self.mixer.play_soundtrack()
         quit()
         exit()
