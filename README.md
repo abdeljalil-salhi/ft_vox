@@ -14,8 +14,6 @@
 
 ---
 
-## No texture mode
-
 <p align="center">
-    <img width="1920" alt="Image" src="https://github.com/user-attachments/assets/791e30af-f5f0-4fe1-9edf-b24cfa5cb5f4" />
+    <img width="1920" alt="Image" src="https://github.com/user-attachments/assets/f3baf228-bdb0-449c-9690-58fd817599ee" />
 </p>
