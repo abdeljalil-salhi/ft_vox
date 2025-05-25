@@ -19,11 +19,11 @@ class Mixer:
 
         # Load and configure the sound effect for harvesting an item
         self.harvest_sound = mixer.Sound("assets/sounds/harvest.wav")
-        self.harvest_sound.set_volume(1)  # Set volume to maximum
+        self.harvest_sound.set_volume(0.5)
 
         # Load and configure the sound effect for placing a block
         self.put_sound = mixer.Sound("assets/sounds/put.wav")
-        self.put_sound.set_volume(1)  # Set volume to maximum
+        self.put_sound.set_volume(0.5)
 
     def play_soundtrack(self) -> None:
         """
