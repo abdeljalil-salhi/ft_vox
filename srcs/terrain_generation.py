@@ -4,6 +4,7 @@ from numba import njit
 from numpy import ndarray
 
 from objects.texturing import (
+    BEEHIVE_PROBABILITY,
     TREE_H_HEIGHT,
     TREE_H_WIDTH,
     TREE_HEIGHT,
@@ -143,3 +144,7 @@ def generate_tree(
 
     # Generate tree top
     voxels[get_index(x, y + TREE_HEIGHT - 2, z)] = leaf_type
+
+    # Generate beehive
+    if random() < BEEHIVE_PROBABILITY:
+        voxels[get_index(x + 1, y + TREE_HEIGHT - 5, z)] = Texture.BEEHIVE.value
