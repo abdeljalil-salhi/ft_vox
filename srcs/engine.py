@@ -33,6 +33,7 @@ from pygame import (
 from moderngl import BLEND, CULL_FACE, DEPTH_TEST, create_context
 from sys import exit
 
+from objects.inventory import Inventory
 from objects.texturing import SKYBOX_COLOR
 from settings import WINDOW_RESOLUTION, WINDOW_TITLE
 from srcs.mixer import Mixer
@@ -104,6 +105,7 @@ class Engine:
 
         self.textures = Textures(self)
         self.player = Player(self)
+        self.inventory = Inventory(self)
         self.shader = Shader(self)
         self.scene = Scene(self)
         self.mixer = Mixer()
@@ -139,25 +141,25 @@ class Engine:
                     self.textures_enabled = not self.textures_enabled
                     self.shader.chunk["textures_enabled"].value = self.textures_enabled
                 if e.key == K_1:
-                    self.player.inventory.select_slot(0)
+                    self.inventory.select_slot(0)
                 elif e.key == K_2:
-                    self.player.inventory.select_slot(1)
+                    self.inventory.select_slot(1)
                 elif e.key == K_3:
-                    self.player.inventory.select_slot(2)
+                    self.inventory.select_slot(2)
                 elif e.key == K_4:
-                    self.player.inventory.select_slot(3)
+                    self.inventory.select_slot(3)
                 elif e.key == K_5:
-                    self.player.inventory.select_slot(4)
+                    self.inventory.select_slot(4)
                 elif e.key == K_6:
-                    self.player.inventory.select_slot(5)
+                    self.inventory.select_slot(5)
                 elif e.key == K_7:
-                    self.player.inventory.select_slot(6)
+                    self.inventory.select_slot(6)
                 elif e.key == K_8:
-                    self.player.inventory.select_slot(7)
+                    self.inventory.select_slot(7)
                 elif e.key == K_9:
-                    self.player.inventory.select_slot(8)
+                    self.inventory.select_slot(8)
                 elif e.key == K_0:
-                    self.player.inventory.select_slot(9)
+                    self.inventory.select_slot(9)
             self.player.handle_mouse_events(e)
 
     def run(self) -> None:

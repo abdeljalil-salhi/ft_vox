@@ -24,6 +24,7 @@ class VoxelHandler:
     def __init__(self, world: "World") -> None:
         self.game = world.game
         self.chunks = world.chunks
+        self.inventory = self.game.inventory
 
         # Ray casting related attributes
         self.chunk: Chunk = None
@@ -35,10 +36,11 @@ class VoxelHandler:
 
         # 0: Remove voxel, 1: Add voxel
         self.interaction_mode = 0
-        self.new_voxel_id = 1
+        self.new_voxel_id = self.inventory.get_selected_item()
 
     def update(self) -> None:
         self.ray_cast()
+        self.new_voxel_id = self.inventory.get_selected_item()
 
     def ray_cast(self) -> bool:
         eye_position = self.game.player.position + vec3(0, EYE_HEIGHT, 0)
@@ -130,6 +132,8 @@ class VoxelHandler:
             result = self.get_voxel_id(self.voxel_world_position + self.voxel_normal)
 
             if not result[0]:
+                if self.new_voxel_id == 0:
+                    return
                 self.game.mixer.put_sound.play()
 
                 _, voxel_index, _, chunk = result

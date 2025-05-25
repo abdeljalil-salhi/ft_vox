@@ -14,7 +14,6 @@ from pygame import (
     mouse,
 )
 from glm import vec3
-from objects.inventory import Inventory
 from settings import (
     KEYBOARD_QWERTY,
     MOUSE_SENSITIVITY,
@@ -58,7 +57,6 @@ class Player(Camera):
             pitch (float): Initial pitch angle in degrees.
         """
         self.game = game
-        self.inventory = Inventory()
         super().__init__(position, yaw, pitch)
 
     def on_init(self) -> None:

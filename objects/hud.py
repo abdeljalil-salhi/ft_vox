@@ -21,7 +21,7 @@ class HUD:
         self.game.textures.update_text(info_text)
 
         # Render inventory slots
-        inventory = self.player.inventory
+        inventory = self.game.inventory
         slot_size = 50  # Size of each inventory slot in pixels
         spacing = 7  # Spacing between slots in pixels
         total_width = 10 * slot_size + 9 * spacing
