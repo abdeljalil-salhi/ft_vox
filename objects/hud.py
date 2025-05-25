@@ -15,9 +15,24 @@ class HUD:
         self.player = player
         self.hud_item_mesh = HUDItemMesh(game)
 
+    def debug(self) -> str:
+        """Returns a debug string with player position and chunk information."""
+        fps = self.game.clock.get_fps()
+        player_pos = self.player.position
+        textures_enabled = "on" if self.game.textures_enabled else "off"
+        shading_mode = self.game.shading_mode
+        go_through = "on" if GO_THROUGH else "off"
+        return (
+            f"FPS: {fps:.0f}\n"
+            f"pos: {int(player_pos.x)}, {int(player_pos.y)}, {int(player_pos.z)}\n"
+            f"textures: {textures_enabled}\n"
+            f"shading: {shading_mode}\n"
+            f"go_through: {go_through}"
+        )
+
     def render(self):
         # Render the info logging
-        info_text = f"FPS: {self.game.clock.get_fps():.0f}\ntextures: {'on' if self.game.textures_enabled else 'off'}\nshading: {self.game.shading_mode}\ngo_through: {'on' if GO_THROUGH else 'off'}"
+        info_text = self.debug()
         self.game.textures.update_text(info_text)
 
         # Render inventory slots
@@ -82,7 +97,33 @@ class HUD:
                     vec4(1.0, 1.0, 1.0, 1.0),
                 )
 
+        # Render the crosshair in the center of the screen
         window_width, window_height = self.game.get_window_resolution()
+        crosshair_size = 10  # Length of each crosshair arm (pixels)
+        crosshair_thickness = 2  # Thickness of the crosshair lines (pixels)
+        crosshair_color = vec4(0.9, 0.9, 0.9, 0.9)  # Light gray color
+        center_x = window_width / 2
+        center_y = window_height / 2
+
+        # Vertical line (taller, thin)
+        self.game.shader.render_2d_quad(
+            center_x - crosshair_thickness / 2,  # Center the line horizontally
+            center_y - crosshair_size,  # Start below the center
+            crosshair_thickness,  # Width of the line
+            crosshair_size * 2,  # Height of the line (above and below center)
+            crosshair_color,
+        )
+
+        # Horizontal line (wider, short)
+        self.game.shader.render_2d_quad(
+            center_x - crosshair_size,  # Start left of the center
+            center_y - crosshair_thickness / 2,  # Center the line vertically
+            crosshair_size * 2,  # Width of the line (left and right of center)
+            crosshair_thickness,  # Height of the line
+            crosshair_color,
+        )
+
+        # Render the text (FPS, etc.) in the top-right corner
         text_width, text_height = self.game.textures.text_surface.get_size()
         self.game.shader.render_2d_quad(
             window_width - text_width - 10,

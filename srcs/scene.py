@@ -64,10 +64,10 @@ class Scene:
         # Re-enable face culling for performance (for next objects)
         self.game.context.enable(CULL_FACE)
 
+        # Render voxel marker (e.g., highlighted block under the cursor)
+        self.voxel_marker.render()
+
         self.game.context.disable(DEPTH_TEST)  # Disable depth test for 2D HUD rendering
         # Render the HUD (heads-up display) on top of everything else
         self.hud.render()
         self.game.context.enable(DEPTH_TEST)  # Re-enable if needed
-
-        # Render voxel marker (e.g., highlighted block under the cursor)
-        self.voxel_marker.render()
