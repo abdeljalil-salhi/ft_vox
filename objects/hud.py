@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
-from pygame import display
 from glm import vec4
 
 from meshes.hud_item_mesh import HUDItemMesh
+from settings import GO_THROUGH
 
 if TYPE_CHECKING:
     from srcs.engine import Engine
@@ -16,11 +16,16 @@ class HUD:
         self.hud_item_mesh = HUDItemMesh(game)
 
     def render(self):
+        # Render the info logging
+        info_text = f"FPS: {self.game.clock.get_fps():.0f}\ntextures: {'on' if self.game.textures_enabled else 'off'}\nshading: {self.game.shading_mode}\ngo_through: {'on' if GO_THROUGH else 'off'}"
+        self.game.textures.update_text(info_text)
+
+        # Render inventory slots
         inventory = self.player.inventory
         slot_size = 50  # Size of each inventory slot in pixels
         spacing = 7  # Spacing between slots in pixels
         total_width = 10 * slot_size + 9 * spacing
-        window_x = display.get_surface().get_width()
+        window_x = self.game.get_window_resolution()[0]
         x_start = (window_x - total_width) / 2
         y = 10  # 10 pixels from bottom
 
@@ -76,3 +81,13 @@ class HUD:
                     slot_size + 2 * border_width,
                     vec4(1.0, 1.0, 1.0, 1.0),
                 )
+
+        window_width, window_height = self.game.get_window_resolution()
+        text_width, text_height = self.game.textures.text_surface.get_size()
+        self.game.shader.render_2d_quad(
+            window_width - text_width - 10,
+            window_height - text_height - 10,
+            text_width,
+            text_height,
+            use_text=True,
+        )

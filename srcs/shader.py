@@ -59,11 +59,19 @@ class Shader:
             dtype="f4",
         )
         vbo = self.context.buffer(vertices)
-        vao = self.context.vertex_array(self.hud, [(vbo, "2f 2f", "in_position", "in_texture_coords")])
+        vao = self.context.vertex_array(
+            self.hud, [(vbo, "2f 2f", "in_position", "in_texture_coords")]
+        )
         return vao
 
     def render_2d_quad(
-        self, x: float, y: float, w: float, h: float, color: vec4 = None
+        self,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
+        color: vec4 = None,
+        use_text: bool = False,
     ) -> None:
         """
         Renders a 2D quad in the HUD at the specified position with the given size and color.
@@ -74,12 +82,22 @@ class Shader:
             w (float): Width of the quad
             h (float): Height of the quad
             color (vec4, optional): Color of the quad. Defaults to white if None.
+            use_text (bool, optional): If True, uses the texturing shader. Defaults to False.
         """
         self.hud["projection"].write(self.ortho_projection)
         self.hud["position"].write(array([x, y], dtype="f4"))
         self.hud["size"].write(array([w, h], dtype="f4"))
-        self.hud["use_texture"].value = 0
-        self.hud["color"].write(color if color is not None else vec4(1.0))
+
+        if use_text:
+            self.hud["use_texture"].value = True
+            self.game.textures.text_texture.use(
+                location=3
+            )  # Bind text texture to unit 3
+            self.hud["tex"].value = 3
+        else:
+            self.hud["use_texture"].value = False
+            self.hud["color"].write(color if color is not None else vec4(1.0))
+
         self.quad_vao.render(mode=TRIANGLE_FAN)
 
     def render_3d_item(

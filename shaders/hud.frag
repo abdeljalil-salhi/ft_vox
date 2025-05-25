@@ -1,30 +1,28 @@
 #version 330 core
 
-// Input texture coordinates passed from the vertex shader
-in vec2 texture_coords;
-
-// Final fragment color output
-out vec4 FragColor;
-
-// Whether to use a texture or just a solid color
-uniform bool use_texture;
-
-// Texture array containing multiple layers (e.g., different block textures)
-uniform sampler2DArray tex;
-
-// The texture layer to sample from
-uniform int layer;
-
-// Fallback color used when not using texture
+// Uniforms:
+// Color to use when no texture is applied
 uniform vec4 color;
 
+// Boolean flag to determine whether to use a texture or flat color
+uniform bool use_texture;
+
+// Sampler for the 2D texture
+uniform sampler2D tex;
+
+// Input texture coordinates from the vertex shader
+in vec2 v_texture_coords;
+
+// Output color of the fragment (pixel)
+layout(location = 0) out vec4 fragColor;
+
 void main() {
-    // If texture usage is enabled, sample the texture from the specified layer
+    // If use_texture is true, sample the color from the texture using the provided coordinates
     if (use_texture) {
-        FragColor = texture(tex, vec3(texture_coords, layer));
-    }
-    // Otherwise, use the solid color
+        fragColor = texture(tex, v_texture_coords);
+    } 
+    // Otherwise, use the specified uniform color
     else {
-        FragColor = color;
+        fragColor = color;
     }
 }
