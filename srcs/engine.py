@@ -1,5 +1,6 @@
 from functools import cache
 from pygame import (
+    ACTIVEEVENT,
     DOUBLEBUF,
     FULLSCREEN,
     GL_CONTEXT_MAJOR_VERSION,
@@ -41,6 +42,7 @@ from srcs.player import Player
 from srcs.scene import Scene
 from srcs.shader import Shader
 from srcs.textures import Textures
+from srcs.utils import hide_cursor, show_cursor
 
 
 class Engine:
@@ -63,6 +65,7 @@ class Engine:
         event.set_grab(True)  # locks the mouse to the window
         mouse.set_visible(False)
         mouse.set_pos(WINDOW_RESOLUTION.x // 2, WINDOW_RESOLUTION.y // 2)
+        hide_cursor()
 
         self.context = create_context()
         # DEPTH_TEST:
@@ -133,6 +136,13 @@ class Engine:
         for e in event.get():
             if e.type == QUIT or (e.type == KEYDOWN and e.key == K_ESCAPE):
                 self.is_running = False
+            if e.type == ACTIVEEVENT:
+                if e.gain:
+                    mouse.set_visible(False)
+                    hide_cursor()
+                else:
+                    mouse.set_visible(True)
+                    show_cursor()
             if e.type == KEYDOWN:
                 if e.key == K_h:
                     self.shading_mode = (self.shading_mode - 1) % 3
@@ -168,5 +178,6 @@ class Engine:
             self.update()
             self.render()
             self.mixer.play_soundtrack()
+        show_cursor()
         quit()
         exit()
