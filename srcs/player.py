@@ -57,6 +57,7 @@ class Player(Camera):
             pitch (float): Initial pitch angle in degrees.
         """
         self.game = game
+        self.window_x, self.window_y = game.get_window_resolution()
         super().__init__(position, yaw, pitch)
 
     def on_init(self) -> None:
@@ -102,7 +103,7 @@ class Player(Camera):
             self.rotate_pitch(delta_y=mouse_dy * MOUSE_SENSITIVITY)
 
         # Reset mouse position to center of screen for continuous input
-        mouse.set_pos(WINDOW_RESOLUTION.x * 0.5, WINDOW_RESOLUTION.y * 0.5)
+        mouse.set_pos(self.window_x * 0.5, self.window_y * 0.5)
 
     def keyboard_events(self) -> None:
         """
