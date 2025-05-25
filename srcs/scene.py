@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
 
-from moderngl import CULL_FACE
+from moderngl import CULL_FACE, DEPTH_TEST
 
+from objects.hud import HUD
 from objects.clouds import Clouds
 from objects.voxel_marker import VoxelMarker
 from objects.water import Water
@@ -22,6 +23,9 @@ class Scene:
 
         # Create the world which contains all terrain and chunk data
         self.world = World(self.game)
+
+        # Create the HUD (heads-up display) for player stats, inventory, etc.
+        self.hud = HUD(self.game, self.game.player)
 
         # Create the voxel marker (e.g., for block highlighting/placement)
         self.voxel_marker = VoxelMarker(self.world.voxel_handler)
@@ -59,6 +63,11 @@ class Scene:
 
         # Re-enable face culling for performance (for next objects)
         self.game.context.enable(CULL_FACE)
+
+        self.game.context.disable(DEPTH_TEST)  # Disable depth test for 2D HUD rendering
+        # Render the HUD (heads-up display) on top of everything else
+        self.hud.render()
+        self.game.context.enable(DEPTH_TEST)  # Re-enable if needed
 
         # Render voxel marker (e.g., highlighted block under the cursor)
         self.voxel_marker.render()

@@ -1,3 +1,4 @@
+from functools import cache
 from pygame import (
     DOUBLEBUF,
     FULLSCREEN,
@@ -12,6 +13,16 @@ from pygame import (
     QUIT,
     K_h,
     K_t,
+    K_1,
+    K_2,
+    K_3,
+    K_4,
+    K_5,
+    K_6,
+    K_7,
+    K_8,
+    K_9,
+    K_0,
     init,
     quit,
     display,
@@ -79,6 +90,11 @@ class Engine:
     def get_textures_enabled(self) -> bool:
         return self.textures_enabled
 
+    @cache
+    def get_window_resolution(self) -> tuple[int, int]:
+        w, h = display.get_surface().get_size()
+        return w, h
+
     def show_loading_screen(self) -> None:
         self.context.clear(color=SKYBOX_COLOR)
         display.flip()
@@ -122,6 +138,26 @@ class Engine:
                 elif e.key == K_t:
                     self.textures_enabled = not self.textures_enabled
                     self.shader.chunk["textures_enabled"].value = self.textures_enabled
+                if e.key == K_1:
+                    self.player.inventory.select_slot(0)
+                elif e.key == K_2:
+                    self.player.inventory.select_slot(1)
+                elif e.key == K_3:
+                    self.player.inventory.select_slot(2)
+                elif e.key == K_4:
+                    self.player.inventory.select_slot(3)
+                elif e.key == K_5:
+                    self.player.inventory.select_slot(4)
+                elif e.key == K_6:
+                    self.player.inventory.select_slot(5)
+                elif e.key == K_7:
+                    self.player.inventory.select_slot(6)
+                elif e.key == K_8:
+                    self.player.inventory.select_slot(7)
+                elif e.key == K_9:
+                    self.player.inventory.select_slot(8)
+                elif e.key == K_0:
+                    self.player.inventory.select_slot(9)
             self.player.handle_mouse_events(e)
 
     def run(self) -> None:
