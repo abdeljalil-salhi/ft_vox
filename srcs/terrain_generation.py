@@ -88,11 +88,13 @@ def set_voxel_id(
     voxels[get_index(x, y, z)] = voxel_id
 
     if wy < TerrainLevel.DIRT.value:
-        generate_tree(voxels, x, y, z, voxel_id)
+        generate_tree(voxels, x, y, z, voxel_id, wx, wz)
 
 
 @njit
-def generate_tree(voxels: ndarray, x: int, y: int, z: int, voxel_id: int):
+def generate_tree(
+    voxels: ndarray, x: int, y: int, z: int, voxel_id: int, wx: int, wz: int
+):
     if voxel_id != Texture.GRASS.value or random() > TREE_PROBABILITY:
         return None
     if y + TREE_HEIGHT >= CHUNK_SIZE:
@@ -101,6 +103,25 @@ def generate_tree(voxels: ndarray, x: int, y: int, z: int, voxel_id: int):
         return None
     if z - TREE_H_WIDTH < 0 or z + TREE_H_WIDTH >= CHUNK_SIZE:
         return None
+
+    # Determine biome based on world coordinates
+    biome_frequency = (
+        0.005  # Controls biome size: higher = smaller biomes, lower = larger biomes
+    )
+    biome_noise = noise2(wx * biome_frequency, wz * biome_frequency)
+
+    # Assign primary leaf type based on biome
+    if biome_noise < -0.33:
+        primary_leaf_type = Texture.SAKURA_LEAVES.value
+    elif biome_noise < 0.33:
+        primary_leaf_type = Texture.NORMAL_LEAVES.value
+    else:
+        primary_leaf_type = Texture.OAK_LEAVES.value
+
+    # Introduce mixing: 10% chance of Normal leaves in Sakura/Oak biomes
+    leaf_type = primary_leaf_type
+    if random() < 0.1:
+        leaf_type = Texture.NORMAL_LEAVES.value
 
     # Generate dirt under the tree
     voxels[get_index(x, y, z)] = Texture.DIRT.value
@@ -113,9 +134,7 @@ def generate_tree(voxels: ndarray, x: int, y: int, z: int, voxel_id: int):
         for ix in range(-TREE_H_WIDTH + m, TREE_H_WIDTH - m * rng):
             for iz in range(-TREE_H_WIDTH + m * rng, TREE_H_WIDTH - m):
                 if (ix + iz) % 4:
-                    voxels[get_index(x + ix + k, y + iy, z + iz + k)] = (
-                        Texture.NORMAL_LEAVES.value
-                    )
+                    voxels[get_index(x + ix + k, y + iy, z + iz + k)] = leaf_type
         m += 1 if n > 0 else 3 if n > 1 else 0
 
     # Generate tree trunk
@@ -123,4 +142,4 @@ def generate_tree(voxels: ndarray, x: int, y: int, z: int, voxel_id: int):
         voxels[get_index(x, y + iy, z)] = Texture.WOOD.value
 
     # Generate tree top
-    voxels[get_index(x, y + TREE_HEIGHT - 2, z)] = Texture.NORMAL_LEAVES.value
+    voxels[get_index(x, y + TREE_HEIGHT - 2, z)] = leaf_type
